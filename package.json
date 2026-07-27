@@ -1,0 +1,78 @@
+{
+  "name": "log-filter",
+  "author": "lumine-code",
+  "description": "Filter log lines by text and severity level.",
+  "repository": "https://github.com/lumine-code/log-filter",
+  "bugs": {
+    "url": "https://github.com/lumine-code/log-filter/issues"
+  },
+  "keywords": [
+    "syslog",
+    "severity",
+    "tail",
+    "fold",
+    "monitoring"
+  ],
+  "version": "1.0.0",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.100.0 <2.0.0"
+  },
+  "main": "./lib/main",
+  "scripts": {
+    "test": "cd ../lumine && npm run test:only -- ../log-filter/spec",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "configSchema": {
+    "grammarScopes": {
+      "title": "Grammar scopes",
+      "description": "Scope names of the grammars treated as logs. The panel opens automatically for them and only they get the severity buttons.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "source.log"
+      ]
+    },
+    "autoShow": {
+      "title": "Open panel automatically",
+      "description": "Open the filter panel whenever the active editor uses one of the grammars above.",
+      "type": "boolean",
+      "default": true
+    },
+    "adjacentLines": {
+      "title": "Adjacent visible lines",
+      "description": "Keep this many lines visible before and after each text filter match.",
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "foldPosition": {
+      "title": "Fold position",
+      "description": "Choose where folded hidden lines are anchored in the editor.",
+      "type": "string",
+      "enum": [
+        {
+          "value": "end-of-line",
+          "description": "At the end of the line before the hidden block."
+        },
+        {
+          "value": "between-lines",
+          "description": "Between the visible lines around the hidden block."
+        }
+      ],
+      "default": "end-of-line"
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.2.2",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.6"
+  }
+}

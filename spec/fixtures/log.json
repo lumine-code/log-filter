@@ -1,0 +1,19 @@
+{
+  "scopeName": "source.log",
+  "name": "Log",
+  "fileTypes": ["log"],
+  "patterns": [
+    {
+      "match": "^.*\\bERROR\\b.*$",
+      "name": "definition.log.log-error"
+    },
+    {
+      "match": "^.*\\bWARNING\\b.*$",
+      "name": "definition.log.log-warning"
+    },
+    {
+      "match": "^.*\\bINFO\\b.*$",
+      "name": "definition.log.log-info"
+    }
+  ]
+}

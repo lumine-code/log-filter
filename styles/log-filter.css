@@ -1,0 +1,186 @@
+.log-filter-view {
+  --log-item-width: 300px;
+  --log-item-color: #31363f;
+  --log-min-width: 200px;
+
+  -webkit-user-select: none;
+  padding: calc(var(--component-padding) / 2);
+  overflow-x: auto;
+
+  svg.icon {
+    width: 20px;
+    height: 16px;
+    vertical-align: middle;
+    fill: currentColor;
+    pointer-events: none;
+  }
+
+  .header {
+    padding: calc(var(--component-padding) / 4) calc(var(--component-padding) / 2);
+    min-width: var(--log-min-width);
+    line-height: 1.75;
+
+    .description {
+      display: inline-block;
+      color: var(--text-color-subtle);
+      padding-left: var(--component-padding);
+
+      &.warning {
+        color: var(--text-color-warning);
+        font-weight: normal;
+      }
+    }
+  }
+
+  .header-item {
+    margin: calc(var(--component-padding) / 4) 0;
+  }
+
+  .options-label {
+    color: var(--text-color-subtle);
+    position: relative;
+
+    .btn-group {
+      display: inline-flex;
+      margin-left: 0.5em;
+      margin-top: -0.1em;
+
+      .btn {
+        width: 36px;
+        padding: 0;
+        line-height: 1.9em;
+        text-align: center;
+      }
+
+      .btn.icon::before {
+        margin-right: 0;
+        width: auto;
+        line-height: inherit;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  /* Severity buttons echo the colors the log grammar uses in the editor. */
+  .log-level-error {
+    color: var(--text-color-error);
+  }
+
+  .log-level-warning {
+    color: var(--text-color-warning);
+  }
+
+  .log-level-debug {
+    color: var(--text-color-success);
+  }
+
+  .log-level-info {
+    color: var(--text-color-info);
+  }
+
+  .log-level-verbose {
+    color: var(--text-color-highlight);
+  }
+
+  .input-block.log-timestamps {
+    padding: calc(var(--component-padding) / 2);
+    min-width: var(--log-min-width);
+
+    .log-timestamps-line {
+      border-bottom: 2px solid var(--log-item-color);
+      width: 100%;
+      margin-bottom: 9px;
+    }
+
+    .input-block-item {
+      flex: 1 1;
+    }
+
+    .input-block-item--flex {
+      padding: 0;
+      flex: 100 1;
+    }
+
+    .icon {
+      color: var(--log-item-color);
+
+      &::before {
+        width: 10px;
+        margin-right: 0;
+      }
+    }
+  }
+
+  .close-button {
+    margin-left: var(--component-padding);
+    cursor: pointer;
+    color: var(--text-color-subtle);
+
+    &:hover {
+      color: var(--text-color-highlight);
+    }
+
+    .icon::before {
+      margin-right: 0;
+      text-align: center;
+      vertical-align: middle;
+    }
+  }
+
+  .input-block {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    min-width: var(--log-min-width);
+
+    .input-block-item {
+      display: flex;
+      flex: 1 1 var(--log-item-width);
+      padding: calc(var(--component-padding) / 2);
+
+      .btn-group {
+        display: flex;
+      }
+    }
+
+    .input-block-item--flex {
+      flex: 100 1 var(--log-item-width);
+    }
+
+    .btn-group {
+      display: flex;
+      flex: 1 1 var(--log-item-width);
+
+      .btn {
+        flex: 1;
+      }
+
+      & + .btn-group {
+        margin-left: var(--component-padding);
+      }
+    }
+  }
+
+  .filter-container {
+    .editor-container {
+      flex: 1 1 auto;
+      min-width: var(--log-min-width);
+    }
+
+    .input-block-item:not(.editor-container) {
+      flex: 0 0 auto;
+    }
+
+    .btn-next {
+      min-width: 84px;
+    }
+  }
+
+  .editor-container {
+    position: relative;
+
+    atom-text-editor {
+      width: 100%;
+    }
+  }
+}

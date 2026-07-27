@@ -1,0 +1,22 @@
+{
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "Log Filter",
+          "submenu": [
+            {
+              "label": "Toggle panel",
+              "command": "log-filter:toggle"
+            },
+            {
+              "label": "Toggle focus",
+              "command": "log-filter:toggle-focus"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
