@@ -34,9 +34,9 @@ The severity buttons need a grammar that marks log levels with the `definition.l
 
 ## Customization
 
-The style of the panel can be adjusted in the user's `styles.less` file, e.g. tint the timestamp separator:
+The style of the panel can be adjusted in the user's `styles.css` file, e.g. tint the timestamp separator:
 
-```less
+```css
 .log-filter-view {
   --log-item-color: #4a5568;
 }
