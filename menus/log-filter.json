@@ -7,11 +7,11 @@
           "label": "Log Filter",
           "submenu": [
             {
-              "label": "Toggle panel",
+              "label": "Toggle Panel",
               "command": "log-filter:toggle"
             },
             {
-              "label": "Toggle focus",
+              "label": "Toggle Focus",
               "command": "log-filter:toggle-focus"
             }
           ]
