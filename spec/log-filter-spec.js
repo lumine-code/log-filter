@@ -20,17 +20,17 @@ describe("log-filter", () => {
   let workspaceElement, mainModule, editor;
 
   const getPanel = () =>
-    atom.workspace.getBottomPanels().find((panel) => panel.className === "log-filter-panel");
+    lumine.workspace.getBottomPanels().find((panel) => panel.className === "log-filter-panel");
 
   beforeEach(async () => {
-    workspaceElement = atom.views.getView(atom.workspace);
+    workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);
-    atom.grammars.loadGrammarSync(GRAMMAR_PATH);
+    lumine.grammars.loadGrammarSync(GRAMMAR_PATH);
 
-    const pack = await atom.packages.activatePackage("log-filter");
+    const pack = await lumine.packages.activatePackage("log-filter");
     mainModule = pack.mainModule;
 
-    editor = await atom.workspace.open("sample.log");
+    editor = await lumine.workspace.open("sample.log");
     editor.setText(LINES.join("\n"));
   });
 
@@ -67,21 +67,21 @@ describe("log-filter", () => {
     });
 
     it("warns instead of throwing on an invalid regex", () => {
-      spyOn(atom.notifications, "addWarning");
+      spyOn(lumine.notifications, "addWarning");
       filter.setRegexEnabled(true);
       filter.filterText("([unclosed");
 
-      expect(atom.notifications.addWarning).toHaveBeenCalled();
+      expect(lumine.notifications.addWarning).toHaveBeenCalled();
       expect(filter.getHiddenRows()).toEqual([]);
     });
 
     it("keeps the configured number of lines around each match visible", () => {
-      atom.config.set("log-filter.adjacentLines", 1);
+      lumine.config.set("log-filter.adjacentLines", 1);
       filter.filterText("ERROR");
       // Rows 1 and 3 neighbour a match, row 0 does not.
       expect(filter.getHiddenRows()).toEqual([0]);
 
-      atom.config.set("log-filter.adjacentLines", 2);
+      lumine.config.set("log-filter.adjacentLines", 2);
       filter.filterText("ERROR");
       expect(filter.getHiddenRows()).toEqual([]);
     });
@@ -113,7 +113,7 @@ describe("log-filter", () => {
     });
 
     it("anchors the fold between the lines when configured to", () => {
-      atom.config.set("log-filter.foldPosition", "between-lines");
+      lumine.config.set("log-filter.foldPosition", "between-lines");
       filter.filterText("ERROR");
 
       // Row 3 now folds onto itself instead of onto row 2, so it keeps its own
@@ -127,29 +127,29 @@ describe("log-filter", () => {
     it("opens for a log grammar and closes again on toggle", () => {
       expect(getPanel()).toBeTruthy();
 
-      atom.commands.dispatch(workspaceElement, "log-filter:toggle");
+      lumine.commands.dispatch(workspaceElement, "log-filter:toggle");
       expect(getPanel()).toBeFalsy();
 
-      atom.commands.dispatch(workspaceElement, "log-filter:toggle");
+      lumine.commands.dispatch(workspaceElement, "log-filter:toggle");
       expect(getPanel()).toBeTruthy();
     });
 
     it("does not open on its own for other grammars", async () => {
-      const plain = await atom.workspace.open("notes.txt");
+      const plain = await lumine.workspace.open("notes.txt");
       expect(plain.getGrammar().scopeName).not.toBe("source.log");
       expect(getPanel()).toBeFalsy();
 
       // ...but the command still opens it, without the severity buttons.
-      atom.commands.dispatch(workspaceElement, "log-filter:toggle");
+      lumine.commands.dispatch(workspaceElement, "log-filter:toggle");
       expect(getPanel()).toBeTruthy();
       expect(mainModule.view.levelButtonGroup.style.display).toBe("none");
     });
 
     it("stays closed when the automatic panel is disabled", async () => {
-      atom.config.set("log-filter.autoShow", false);
+      lumine.config.set("log-filter.autoShow", false);
       expect(getPanel()).toBeFalsy();
 
-      const other = await atom.workspace.open("other.log");
+      const other = await lumine.workspace.open("other.log");
       other.setText(LINES.join("\n"));
       expect(getPanel()).toBeFalsy();
     });
@@ -157,7 +157,7 @@ describe("log-filter", () => {
     it("filters the editor when the query is confirmed", () => {
       const view = mainModule.view;
       view.filterBuffer.setText("ERROR");
-      atom.commands.dispatch(view.filterEditorElement, "core:confirm");
+      lumine.commands.dispatch(view.filterEditorElement, "core:confirm");
 
       expect(editor.getScreenLineCount()).toBe(3);
       expect(view.descriptionLabel.textContent).toBe("Showing 2 of 5 log lines");
@@ -174,7 +174,7 @@ describe("log-filter", () => {
     it("restores every line when the panel is closed", () => {
       const view = mainModule.view;
       view.filterBuffer.setText("ERROR");
-      atom.commands.dispatch(view.filterEditorElement, "core:confirm");
+      lumine.commands.dispatch(view.filterEditorElement, "core:confirm");
       expect(editor.getScreenLineCount()).toBe(3);
 
       view.closeButton.click();
@@ -185,14 +185,14 @@ describe("log-filter", () => {
     it("reapplies the filter of an editor it is reopened on", () => {
       const view = mainModule.view;
       view.filterBuffer.setText("ERROR");
-      atom.commands.dispatch(view.filterEditorElement, "core:confirm");
+      lumine.commands.dispatch(view.filterEditorElement, "core:confirm");
       // The state is stored when the filter input settles.
       advanceClock(1000);
 
-      atom.commands.dispatch(workspaceElement, "log-filter:toggle");
+      lumine.commands.dispatch(workspaceElement, "log-filter:toggle");
       expect(editor.getScreenLineCount()).toBe(5);
 
-      atom.commands.dispatch(workspaceElement, "log-filter:toggle");
+      lumine.commands.dispatch(workspaceElement, "log-filter:toggle");
       expect(mainModule.view.filterBuffer.getText()).toBe("ERROR");
       expect(editor.getScreenLineCount()).toBe(3);
     });

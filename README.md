@@ -21,7 +21,7 @@ To install `log-filter` search for _log-filter_ in the Install pane of the Lumin
 
 ## Commands
 
-Commands available in `atom-workspace`:
+Commands available in `lumine-workspace`:
 
 - `log-filter:toggle`: toggle the filter panel,
 - `log-filter:toggle-focus`: move focus between the filter input and the editor.

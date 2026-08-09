@@ -179,7 +179,7 @@
   .editor-container {
     position: relative;
 
-    atom-text-editor {
+    lumine-text-editor {
       width: 100%;
     }
   }
