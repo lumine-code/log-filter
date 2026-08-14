@@ -17,7 +17,7 @@ The panel folds away every line that does not match, so a large log can be narro
 
 ## Installation
 
-To install `log-filter` search for _log-filter_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/log-filter`.
+To install `log-filter` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/log-filter`.
 
 ## Commands
 
