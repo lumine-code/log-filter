@@ -1,3 +1,5 @@
+const { Emitter } = require("lumine");
+
 const Filter = require("../lib/filter");
 const { formatTimestamp } = require("../lib/util");
 
@@ -207,6 +209,77 @@ describe("log-filter", () => {
   });
 
   describe("timestamps", () => {
+    it("shows timestamps immediately for an editor that has already tokenized", () => {
+      mainModule.closePanel();
+      spyOn(Filter.prototype, "getFirstTimestamp").and.returnValue(new Date(2026, 0, 1, 10, 0, 0));
+      spyOn(Filter.prototype, "getLastTimestamp").and.returnValue(new Date(2026, 0, 1, 10, 0, 4));
+      const onDidTokenize = spyOn(editor, "onDidTokenize").and.callThrough();
+
+      mainModule.showPanel(editor);
+      const view = mainModule.view;
+
+      expect(view.timestamps.style.display).toBe("");
+      expect(view.timestampStart.textContent).toBe("01-01-2026 10:00:00");
+      expect(view.timestampEnd.textContent).toBe("01-01-2026 10:00:04");
+      expect(onDidTokenize).toHaveBeenCalled();
+    });
+
+    it("shows timestamps when a cold editor finishes tokenizing", async () => {
+      mainModule.closePanel();
+      let timestampsReady = false;
+      spyOn(Filter.prototype, "getFirstTimestamp").and.callFake(() =>
+        timestampsReady ? new Date(2026, 0, 1, 10, 0, 0) : undefined,
+      );
+      spyOn(Filter.prototype, "getLastTimestamp").and.callFake(() =>
+        timestampsReady ? new Date(2026, 0, 1, 10, 0, 4) : undefined,
+      );
+      const tokenization = new Emitter();
+      spyOn(editor, "onDidTokenize").and.callFake((callback) =>
+        tokenization.on("did-tokenize", callback),
+      );
+
+      mainModule.showPanel(editor);
+
+      const view = mainModule.view;
+      expect(view.timestamps.style.display).toBe("none");
+
+      timestampsReady = true;
+      tokenization.emit("did-tokenize");
+
+      expect(view.timestamps.style.display).toBe("");
+      expect(view.timestampStart.textContent).toBe("01-01-2026 10:00:00");
+      expect(view.timestampEnd.textContent).toBe("01-01-2026 10:00:04");
+      tokenization.dispose();
+    });
+
+    it("does not update timestamps after teardown during tokenization", () => {
+      mainModule.closePanel();
+      let timestampsReady = false;
+      spyOn(Filter.prototype, "getFirstTimestamp").and.callFake(() =>
+        timestampsReady ? new Date(2026, 0, 1, 10, 0, 0) : undefined,
+      );
+      spyOn(Filter.prototype, "getLastTimestamp").and.callFake(() =>
+        timestampsReady ? new Date(2026, 0, 1, 10, 0, 4) : undefined,
+      );
+      const tokenization = new Emitter();
+      spyOn(editor, "onDidTokenize").and.callFake((callback) =>
+        tokenization.on("did-tokenize", callback),
+      );
+
+      mainModule.showPanel(editor);
+
+      const view = mainModule.view;
+      const updateTimestamps = spyOn(view, "updateTimestamps").and.callThrough();
+      mainModule.closePanel();
+      timestampsReady = true;
+      tokenization.emit("did-tokenize");
+
+      expect(mainModule.view).toBeNull();
+      expect(updateTimestamps).not.toHaveBeenCalled();
+      expect(view.timestamps.style.display).toBe("none");
+      tokenization.dispose();
+    });
+
     it("formats timestamps as DD-MM-YYYY HH:mm:ss", () => {
       expect(formatTimestamp(new Date(2026, 0, 2, 3, 4, 5))).toBe("02-01-2026 03:04:05");
     });
