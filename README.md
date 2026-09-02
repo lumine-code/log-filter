@@ -30,7 +30,7 @@ Commands available in `lumine-workspace`:
 
 Text filtering works in any buffer, so the panel can be opened anywhere with `log-filter:toggle`.
 
-The severity buttons need a grammar that marks log levels with the `definition.log.log-*` scopes, as `language-log` does. Such grammars are listed in the "Grammar scopes" setting, which also decides where the panel opens on its own; the buttons are hidden for every other grammar.
+The severity buttons need a grammar that marks log levels with the `keyword.other.log.log-*` scopes, as `language-log` does. Such grammars are listed in the "Grammar scopes" setting, which also decides where the panel opens on its own; the buttons are hidden for every other grammar.
 
 ## Customization
 

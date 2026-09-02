@@ -1,12 +1,5 @@
-const path = require("path");
-
 const Filter = require("../lib/filter");
 const { formatTimestamp } = require("../lib/util");
-
-// A log grammar shipped with the specs, so they do not depend on `language-log`
-// being installed. It marks whole lines with the `definition.log.log-*` scopes
-// the severity buttons look for.
-const GRAMMAR_PATH = path.join(__dirname, "fixtures", "log.json");
 
 const LINES = [
   "2026-01-01 10:00:00 INFO server started",
@@ -25,13 +18,15 @@ describe("log-filter", () => {
   beforeEach(async () => {
     workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);
-    lumine.grammars.loadGrammarSync(GRAMMAR_PATH);
+    await lumine.packages.activatePackage("language-log");
 
     const pack = await lumine.packages.activatePackage("log-filter");
     mainModule = pack.mainModule;
 
     editor = await lumine.workspace.open("sample.log");
     editor.setText(LINES.join("\n"));
+    await editor.languageMode.ready;
+    await conditionPromise(() => editor.languageMode.tree?.rootNode.text === editor.getText());
   });
 
   describe("the filter engine", () => {
@@ -87,16 +82,16 @@ describe("log-filter", () => {
     });
 
     it("hides the lines carrying a filtered severity scope", () => {
-      filter.filterLevels(["definition.log.log-error"]);
+      filter.filterLevels(["keyword.other.log.log-error"]);
       expect(filter.getHiddenRows()).toEqual([2, 4]);
 
-      filter.filterLevels(["definition.log.log-info", "definition.log.log-warning"]);
+      filter.filterLevels(["keyword.other.log.log-info", "keyword.other.log.log-warning"]);
       expect(filter.getHiddenRows()).toEqual([0, 1, 3]);
     });
 
     it("merges the rows hidden by the query and by the severities", () => {
       filter.filterText("ERROR");
-      filter.filterLevels(["definition.log.log-error"]);
+      filter.filterLevels(["keyword.other.log.log-error"]);
       expect(filter.getHiddenRows()).toEqual([0, 1, 2, 3, 4]);
       expect(filter.getHiddenCount()).toBe(5);
     });
@@ -124,6 +119,13 @@ describe("log-filter", () => {
   });
 
   describe("the panel", () => {
+    it("tolerates package teardown while the grammar changes", () => {
+      spyOn(lumine.config, "get").and.returnValue(undefined);
+
+      expect(() => mainModule.isLogEditor(editor)).not.toThrow();
+      expect(mainModule.isLogEditor(editor)).toBe(false);
+    });
+
     it("opens for a log grammar and closes again on toggle", () => {
       expect(getPanel()).toBeTruthy();
 

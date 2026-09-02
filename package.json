@@ -18,6 +18,9 @@
   "engines": {
     "lumine": "^1.0.0"
   },
+  "specPackages": [
+    "language-log"
+  ],
   "backgroundTips": [
     "{% if keys['log-filter:toggle'] %}You can fold away every line of a log that does not match your filter with {{ 'log-filter:toggle' | keystroke }}{% else %}You can fold away every line of a log that does not match your filter.{% endif %}"
   ],
