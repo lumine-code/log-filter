@@ -26,7 +26,7 @@ describe("log-filter", () => {
     editor = await lumine.workspace.open("sample.log");
     editor.setText(LINES.join("\n"));
     await editor.languageMode.ready;
-    await conditionPromise(() => editor.languageMode.tree?.rootNode.text === editor.getText());
+    await editor.getBuffer().getLanguageMode().atTransactionEnd();
   });
 
   describe("the filter engine", () => {
