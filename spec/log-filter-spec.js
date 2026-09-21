@@ -1,6 +1,5 @@
 const { Emitter } = require("lumine");
 
-const Filter = require("../lib/filter");
 const { formatTimestamp } = require("../lib/util");
 
 const LINES = [
@@ -12,7 +11,7 @@ const LINES = [
 ];
 
 describe("log-filter", () => {
-  let workspaceElement, mainModule, editor;
+  let workspaceElement, mainModule, editor, Filter;
 
   const getPanel = () =>
     lumine.workspace.getBottomPanels().find((panel) => panel.className === "log-filter-panel");
@@ -24,6 +23,10 @@ describe("log-filter", () => {
 
     const pack = await lumine.packages.activatePackage("log-filter");
     mainModule = pack.mainModule;
+    // Reacquire helpers from the active package generation. The test runner
+    // unloads package modules between specs, so a top-level require would spy
+    // on a discarded Filter constructor rather than the one FilterView uses.
+    Filter = require("../lib/filter");
 
     editor = await lumine.workspace.open("sample.log");
     editor.setText(LINES.join("\n"));
