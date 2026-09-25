@@ -21,9 +21,6 @@
   "specPackages": [
     "language-log"
   ],
-  "backgroundTips": [
-    "{% if keys['log-filter:toggle'] %}You can fold away every line of a log that does not match your filter with {{ 'log-filter:toggle' | keystroke }}{% else %}You can fold away every line of a log that does not match your filter.{% endif %}"
-  ],
   "main": "./lib/main",
   "files": [
     "lib",
@@ -77,6 +74,13 @@
         }
       ],
       "default": "end-of-line"
+    }
+  },
+  "providedServices": {
+    "background-tips.provider": {
+      "versions": {
+        "1.0.0": "provideBackgroundTips"
+      }
     }
   },
   "devDependencies": {
