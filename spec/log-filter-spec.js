@@ -124,6 +124,22 @@ describe("log-filter", () => {
   });
 
   describe("the panel", () => {
+    it("consumes close from its input even when teardown is deferred", async () => {
+      const view = mainModule.view;
+      const closePanel = mainModule.closePanel.bind(mainModule);
+      spyOn(mainModule, "closePanel");
+      spyOn(lumine.workspace, "closeActivePaneItemOrEmptyPaneOrWindow");
+
+      await lumine.commands.dispatch(view.filterEditorElement, "core:close");
+
+      expect(mainModule.closePanel).toHaveBeenCalledTimes(1);
+      expect(getPanel()).toBeTruthy();
+      expect(lumine.workspace.closeActivePaneItemOrEmptyPaneOrWindow).not.toHaveBeenCalled();
+      expect(editor.isDestroyed()).toBe(false);
+      closePanel();
+      expect(getPanel()).toBeFalsy();
+    });
+
     it("tolerates package teardown while the grammar changes", () => {
       spyOn(lumine.config, "get").and.returnValue(undefined);
 
