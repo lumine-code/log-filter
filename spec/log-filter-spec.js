@@ -102,6 +102,7 @@ describe("log-filter", () => {
     });
 
     it("folds the hidden rows away and restores them when the query is cleared", () => {
+      lumine.config.set("log-filter.foldPosition", "end-of-line");
       expect(editor.getScreenLineCount()).toBe(5);
 
       filter.filterText("ERROR");
@@ -112,8 +113,7 @@ describe("log-filter", () => {
       expect(editor.getScreenLineCount()).toBe(5);
     });
 
-    it("anchors the fold between the lines when configured to", () => {
-      lumine.config.set("log-filter.foldPosition", "between-lines");
+    it("anchors the fold between the lines by default", () => {
       filter.filterText("ERROR");
 
       // Row 3 now folds onto itself instead of onto row 2, so it keeps its own
@@ -179,7 +179,7 @@ describe("log-filter", () => {
       view.filterBuffer.setText("ERROR");
       lumine.commands.dispatch(view.filterEditorElement, "core:confirm");
 
-      expect(editor.getScreenLineCount()).toBe(3);
+      expect(editor.getScreenLineCount()).toBe(4);
       expect(view.descriptionLabel.textContent).toBe("Showing 2 of 5 log lines");
     });
 
@@ -187,7 +187,8 @@ describe("log-filter", () => {
       const view = mainModule.view;
       view.levelButtons.get("error").click();
 
-      expect(editor.getScreenLineCount()).toBe(3);
+      expect(view.filter.getHiddenRows()).toEqual([2, 4]);
+      expect(editor.getScreenLineCount()).toBe(5);
       expect(view.levelButtons.get("error").classList.contains("selected")).toBe(true);
     });
 
@@ -195,7 +196,7 @@ describe("log-filter", () => {
       const view = mainModule.view;
       view.filterBuffer.setText("ERROR");
       lumine.commands.dispatch(view.filterEditorElement, "core:confirm");
-      expect(editor.getScreenLineCount()).toBe(3);
+      expect(editor.getScreenLineCount()).toBe(4);
 
       view.closeButton.click();
       expect(getPanel()).toBeFalsy();
@@ -214,7 +215,7 @@ describe("log-filter", () => {
 
       lumine.commands.dispatch(workspaceElement, "log-filter:toggle");
       expect(mainModule.view.filterBuffer.getText()).toBe("ERROR");
-      expect(editor.getScreenLineCount()).toBe(3);
+      expect(editor.getScreenLineCount()).toBe(4);
     });
 
     it("closes when the editor it filters is destroyed", () => {

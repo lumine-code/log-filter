@@ -73,7 +73,7 @@
           "description": "Between the visible lines around the hidden block."
         }
       ],
-      "default": "end-of-line"
+      "default": "between-lines"
     }
   },
   "providedServices": {
