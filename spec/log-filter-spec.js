@@ -124,6 +124,10 @@ describe("log-filter", () => {
   });
 
   describe("the panel", () => {
+    beforeEach(() => {
+      lumine.config.set("log-filter.autoShow", true);
+    });
+
     it("closes the center editor from its input and follows the remaining log", async () => {
       const closingEditor = await lumine.workspace.open("second.log");
       await closingEditor.languageMode.ready;

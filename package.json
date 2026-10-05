@@ -37,7 +37,7 @@
   "configSchema": {
     "grammarScopes": {
       "title": "Grammar scopes",
-      "description": "Scope names of the grammars treated as logs. The panel opens automatically for them and only they get the severity buttons.",
+      "description": "Scope names of the grammars treated as logs. Only these grammars get the severity buttons and optional automatic panel opening.",
       "type": "array",
       "items": {
         "type": "string"
@@ -50,7 +50,7 @@
       "title": "Open panel automatically",
       "description": "Open the filter panel whenever the active editor uses one of the grammars above.",
       "type": "boolean",
-      "default": true
+      "default": false
     },
     "adjacentLines": {
       "title": "Adjacent visible lines",
