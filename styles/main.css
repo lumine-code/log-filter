@@ -4,7 +4,7 @@
   --log-min-width: 200px;
 
   -webkit-user-select: none;
-  padding: calc(var(--component-padding) / 2);
+  padding: calc(var(--ui-spacing) / 2);
   overflow-x: auto;
 
   svg.icon {
@@ -16,14 +16,14 @@
   }
 
   .header {
-    padding: calc(var(--component-padding) / 4) calc(var(--component-padding) / 2);
+    padding: calc(var(--ui-spacing) / 4) calc(var(--ui-spacing) / 2);
     min-width: var(--log-min-width);
     line-height: 1.75;
 
     .description {
       display: inline-block;
       color: var(--text-color-subtle);
-      padding-left: var(--component-padding);
+      padding-left: var(--ui-spacing);
 
       &.warning {
         color: var(--text-color-warning);
@@ -33,7 +33,7 @@
   }
 
   .header-item {
-    margin: calc(var(--component-padding) / 4) 0;
+    margin: calc(var(--ui-spacing) / 4) 0;
   }
 
   .options-label {
@@ -83,7 +83,7 @@
   }
 
   .input-block.log-timestamps {
-    padding: calc(var(--component-padding) / 2);
+    padding: calc(var(--ui-spacing) / 2);
     min-width: var(--log-min-width);
 
     .log-timestamps-line {
@@ -112,7 +112,7 @@
   }
 
   .close-button {
-    margin-left: var(--component-padding);
+    margin-left: var(--ui-spacing);
     cursor: default;
     color: var(--text-color-subtle);
 
@@ -136,7 +136,7 @@
     .input-block-item {
       display: flex;
       flex: 1 1 var(--log-item-width);
-      padding: calc(var(--component-padding) / 2);
+      padding: calc(var(--ui-spacing) / 2);
 
       .btn-group {
         display: flex;
@@ -156,7 +156,7 @@
       }
 
       & + .btn-group {
-        margin-left: var(--component-padding);
+        margin-left: var(--ui-spacing);
       }
     }
   }
