@@ -313,7 +313,70 @@ describe("log-filter", () => {
       expect(time.getFullYear()).toBe(2026);
       expect(time.getMonth()).toBe(2);
       expect(time.getDate()).toBe(4);
+      expect(time.getHours()).toBe(5);
+      expect(time.getMinutes()).toBe(6);
+      expect(time.getSeconds()).toBe(7);
+      expect(filter.parseTimestamp("2026-03-04T05:06:07.123").getTime()).toBe(
+        new Date(2026, 2, 4, 5, 6, 7, 123).getTime(),
+      );
       filter.destroy();
+    });
+
+    describe("explicit timezones", () => {
+      let filter;
+
+      beforeEach(() => {
+        filter = new Filter(editor);
+      });
+
+      afterEach(() => filter.destroy());
+
+      it("preserves UTC and an explicit year", () => {
+        expect(filter.parseTimestamp("2001-10-08T12:34:56Z").getTime()).toBe(
+          Date.UTC(2001, 9, 8, 12, 34, 56),
+        );
+      });
+
+      it("preserves a positive offset", () => {
+        expect(filter.parseTimestamp("2026-10-08T12:34:56+05:00").getTime()).toBe(
+          Date.UTC(2026, 9, 8, 7, 34, 56),
+        );
+      });
+
+      it("preserves a negative offset with nonzero minutes", () => {
+        expect(filter.parseTimestamp("2026-10-08T12:34:56-03:30").getTime()).toBe(
+          Date.UTC(2026, 9, 8, 16, 4, 56),
+        );
+      });
+
+      it("accepts compact numeric offsets", () => {
+        expect(filter.parseTimestamp("2026-10-08 12:34:56+0530").getTime()).toBe(
+          Date.UTC(2026, 9, 8, 7, 4, 56),
+        );
+        expect(filter.parseTimestamp("2026-10-08 12:34:56-0330").getTime()).toBe(
+          Date.UTC(2026, 9, 8, 16, 4, 56),
+        );
+      });
+
+      it("preserves milliseconds with bracket and decimal-comma normalization", () => {
+        expect(filter.parseTimestamp("[2026-10-08T12:34:56,789+05:00]").getTime()).toBe(
+          Date.UTC(2026, 9, 8, 7, 34, 56, 789),
+        );
+        expect(filter.parseTimestamp("2026-10-08 12:34:56.123z").getTime()).toBe(
+          Date.UTC(2026, 9, 8, 12, 34, 56, 123),
+        );
+      });
+
+      it("preserves an offset through the raw log-line fallback", () => {
+        editor.setText("2026-10-08T12:34:56.789-03:30 INFO server started");
+        spyOn(editor, "bufferRangeForScopeAtPosition").and.returnValue(null);
+
+        expect(filter.getRowTimestamp(0).getTime()).toBe(Date.UTC(2026, 9, 8, 16, 4, 56, 789));
+      });
+
+      it("rejects an invalid explicit offset instead of treating it as local time", () => {
+        expect(filter.parseTimestamp("2026-10-08T12:34:56+25:00")).toBe(false);
+      });
     });
 
     it("assumes the current year for year-less timestamps", () => {
