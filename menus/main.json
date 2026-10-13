@@ -8,7 +8,9 @@
           "submenu": [
             {
               "label": "Log Filter",
-              "command": "log-filter:toggle"
+              "command": "log-filter:toggle",
+              "group": "panels",
+              "order": 10
             }
           ]
         }
