@@ -15,6 +15,8 @@ The panel folds away every line that does not match, so a large log can be narro
 - **Tail mode**: keeps the editor scrolled to the bottom when the file changes on disk.
 - **Persistent state**: remembers the query, the toggles, and the hidden severities per file across sessions.
 
+![Filter a log to keep only warnings and errors visible.](.github/demo.png)
+
 ## Installation
 
 To install `log-filter` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/log-filter`.

@@ -1,0 +1,17 @@
+{
+  "title": "log-filter",
+  "description": "Filter a log to keep only warnings and errors visible.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "afddb77961da1b6cf7f47b2fa63ba8a3534ce73c",
+  "mode": "normal",
+  "fontSettings": "default",
+  "themeSourceRevision": "6564a9e21899b5541e9c8f8006f9be6d6d72e6ad",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Filter a log to keep only warnings and errors visible.",
+      "width": 1100,
+      "height": 480
+    }
+  ]
+}
