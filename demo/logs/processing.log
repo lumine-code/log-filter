@@ -1,0 +1,7 @@
+2026-10-13 10:00:00 INFO Starting signal processing
+2026-10-13 10:00:01 DEBUG Reading configuration
+2026-10-13 10:00:02 INFO Loaded 5 samples
+2026-10-13 10:00:03 WARNING Empty measurement in row 4
+2026-10-13 10:00:04 DEBUG Applying smoothing window
+2026-10-13 10:00:05 ERROR Could not write results.csv: access denied
+2026-10-13 10:00:06 INFO Processing complete
