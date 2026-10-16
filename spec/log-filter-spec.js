@@ -128,6 +128,20 @@ describe("log-filter", () => {
       lumine.config.set("log-filter.autoShow", true);
     });
 
+    it("persists per-file filters and applies project storage updates to the existing view", async () => {
+      const view = mainModule.view;
+      view.filterBuffer.setText("ERROR");
+      await view.saveState();
+      expect(mainModule.workspaceState.get("filters")[editor.getPath()].filterText).toBe("ERROR");
+
+      await mainModule.workspaceState.update("filters", {
+        [editor.getPath()]: { filterText: "WARNING", caseInsensitive: true },
+      });
+      expect(mainModule.view).toBe(view);
+      expect(view.filterBuffer.getText()).toBe("WARNING");
+      expect(view.filter.getHiddenRows()).toEqual([0, 2, 3, 4]);
+    });
+
     it("closes the center editor from its input and follows the remaining log", async () => {
       const closingEditor = await lumine.workspace.open("second.log");
       await closingEditor.languageMode.ready;
