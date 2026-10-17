@@ -142,6 +142,99 @@ describe("log-filter", () => {
       expect(view.filter.getHiddenRows()).toEqual([0, 2, 3, 4]);
     });
 
+    it("keeps an in-progress query and its selection when another file's filter changes", async () => {
+      const view = mainModule.view;
+      view.filterBuffer.setText("ERROR");
+      await view.saveState();
+      view.filterBuffer.setText("disk");
+      view.filterEditor.setSelectedBufferRange([
+        [0, 1],
+        [0, 3],
+      ]);
+      const restore = spyOn(view, "restoreState").and.callThrough();
+      const refold = spyOn(view.filter, "refold").and.callThrough();
+
+      await mainModule.workspaceState.mutate("filters", (filters) => ({
+        ...filters,
+        "another.log": { filterText: "INFO" },
+      }));
+
+      expect(view.filterBuffer.getText()).toBe("disk");
+      expect(view.filterEditor.getSelectedText()).toBe("is");
+      expect(restore).not.toHaveBeenCalled();
+      expect(refold).not.toHaveBeenCalled();
+    });
+
+    it("applies a later committed filter after a local write finishes", async () => {
+      const view = mainModule.view;
+      const store = mainModule.workspaceState;
+      const mutate = store.mutate.bind(store);
+      let release;
+      let didCommit;
+      const committed = new Promise((resolve) => (didCommit = resolve));
+      spyOn(store, "mutate").and.callFake((...args) =>
+        mutate(...args).then(
+          (value) =>
+            new Promise((resolve) => {
+              release = () => resolve(value);
+              didCommit();
+            }),
+        ),
+      );
+      view.filterBuffer.setText("ERROR");
+      const saving = view.saveState();
+      await committed;
+      await store.update("filters", {
+        [editor.getPath()]: { filterText: "WARNING", caseInsensitive: true },
+      });
+      release();
+      await saving;
+
+      expect(view.filterBuffer.getText()).toBe("WARNING");
+      expect(view.filter.getHiddenRows()).toEqual([0, 2, 3, 4]);
+    });
+
+    it("restores the incoming project's filters while an outgoing write is still pending", async () => {
+      const view = mainModule.view;
+      const store = mainModule.workspaceState;
+      const originalPaths = lumine.project.getPaths();
+      lumine.project.setPaths([__dirname]);
+      await store.update("filters", {
+        [editor.getPath()]: { filterText: "WARNING", caseInsensitive: true },
+      });
+      lumine.project.setPaths(originalPaths);
+      const mutate = store.mutate.bind(store);
+      let release;
+      let didCommit;
+      const committed = new Promise((resolve) => (didCommit = resolve));
+      spyOn(store, "mutate").and.callFake((...args) =>
+        mutate(...args).then(
+          (value) =>
+            new Promise((resolve) => {
+              release = () => resolve(value);
+              didCommit();
+            }),
+        ),
+      );
+      view.filterBuffer.setText("ERROR");
+      const saving = view.saveState();
+      await committed;
+      try {
+        lumine.project.setPaths([__dirname]);
+        expect(view.filterBuffer.getText()).toBe("WARNING");
+        expect(view.filter.getHiddenRows()).toEqual([0, 2, 3, 4]);
+        view.filterBuffer.setText("incoming draft");
+        release();
+        await saving;
+        expect(view.filterBuffer.getText()).toBe("incoming draft");
+        expect(store.get("filters")[editor.getPath()].filterText).toBe("WARNING");
+      } finally {
+        release();
+        await saving;
+        lumine.project.setPaths(originalPaths);
+      }
+    });
+
     it("closes the center editor from its input and follows the remaining log", async () => {
       const closingEditor = await lumine.workspace.open("second.log");
       await closingEditor.languageMode.ready;
