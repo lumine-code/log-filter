@@ -1,6 +1,6 @@
 .log-filter-view {
   --log-item-width: 300px;
-  --log-item-color: #31363f;
+  --log-item-color: var(--text-color);
   --log-min-width: 200px;
 
   -webkit-user-select: none;
