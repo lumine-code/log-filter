@@ -86,17 +86,17 @@ describe("log-filter", () => {
       expect(filter.getHiddenRows()).toEqual([]);
     });
 
-    it("hides the lines carrying a filtered severity scope", () => {
-      filter.filterLevels(["keyword.other.log.log-error"]);
+    it("hides the lines carrying a filtered severity scope", async () => {
+      await filter.filterLevels(["keyword.other.log.log-error"]);
       expect(filter.getHiddenRows()).toEqual([2, 4]);
 
-      filter.filterLevels(["keyword.other.log.log-info", "keyword.other.log.log-warning"]);
+      await filter.filterLevels(["keyword.other.log.log-info", "keyword.other.log.log-warning"]);
       expect(filter.getHiddenRows()).toEqual([0, 1, 3]);
     });
 
-    it("merges the rows hidden by the query and by the severities", () => {
+    it("merges the rows hidden by the query and by the severities", async () => {
       filter.filterText("ERROR");
-      filter.filterLevels(["keyword.other.log.log-error"]);
+      await filter.filterLevels(["keyword.other.log.log-error"]);
       expect(filter.getHiddenRows()).toEqual([0, 1, 2, 3, 4]);
       expect(filter.getHiddenCount()).toBe(5);
     });
@@ -294,9 +294,11 @@ describe("log-filter", () => {
       expect(view.descriptionLabel.textContent).toBe("Showing 2 of 5 log lines");
     });
 
-    it("filters the editor when a severity button is clicked", () => {
+    it("filters the editor when a severity button is clicked", async () => {
       const view = mainModule.view;
+      const toggle = spyOn(view, "toggleLevel").and.callThrough();
       view.levelButtons.get("error").click();
+      await toggle.calls.mostRecent().returnValue;
 
       expect(view.filter.getHiddenRows()).toEqual([2, 4]);
       expect(editor.getScreenLineCount()).toBe(5);
@@ -337,14 +339,13 @@ describe("log-filter", () => {
   });
 
   describe("timestamps", () => {
-    it("shows timestamps immediately for an editor that has already tokenized", () => {
+    it("shows timestamps after querying an editor that has already tokenized", async () => {
       mainModule.closePanel();
-      spyOn(Filter.prototype, "getFirstTimestamp").and.returnValue(new Date(2026, 0, 1, 10, 0, 0));
-      spyOn(Filter.prototype, "getLastTimestamp").and.returnValue(new Date(2026, 0, 1, 10, 0, 4));
       const onDidTokenize = spyOn(editor, "onDidTokenize").and.callThrough();
 
       mainModule.showPanel(editor);
       const view = mainModule.view;
+      await view.updateTimestamps();
 
       expect(view.timestamps.style.display).toBe("");
       expect(view.timestampStart.textContent).toBe("01-01-2026 10:00:00");
@@ -355,11 +356,10 @@ describe("log-filter", () => {
     it("shows timestamps when a cold editor finishes tokenizing", async () => {
       mainModule.closePanel();
       let timestampsReady = false;
-      spyOn(Filter.prototype, "getFirstTimestamp").and.callFake(() =>
-        timestampsReady ? new Date(2026, 0, 1, 10, 0, 0) : undefined,
-      );
-      spyOn(Filter.prototype, "getLastTimestamp").and.callFake(() =>
-        timestampsReady ? new Date(2026, 0, 1, 10, 0, 4) : undefined,
+      spyOn(Filter.prototype, "getTimestamps").and.callFake(() =>
+        timestampsReady
+          ? { start: new Date(2026, 0, 1, 10, 0, 0), end: new Date(2026, 0, 1, 10, 0, 4) }
+          : undefined,
       );
       const tokenization = new Emitter();
       spyOn(editor, "onDidTokenize").and.callFake((callback) =>
@@ -383,11 +383,10 @@ describe("log-filter", () => {
     it("does not update timestamps after teardown during tokenization", () => {
       mainModule.closePanel();
       let timestampsReady = false;
-      spyOn(Filter.prototype, "getFirstTimestamp").and.callFake(() =>
-        timestampsReady ? new Date(2026, 0, 1, 10, 0, 0) : undefined,
-      );
-      spyOn(Filter.prototype, "getLastTimestamp").and.callFake(() =>
-        timestampsReady ? new Date(2026, 0, 1, 10, 0, 4) : undefined,
+      spyOn(Filter.prototype, "getTimestamps").and.callFake(() =>
+        timestampsReady
+          ? { start: new Date(2026, 0, 1, 10, 0, 0), end: new Date(2026, 0, 1, 10, 0, 4) }
+          : undefined,
       );
       const tokenization = new Emitter();
       spyOn(editor, "onDidTokenize").and.callFake((callback) =>
@@ -474,11 +473,13 @@ describe("log-filter", () => {
         );
       });
 
-      it("preserves an offset through the raw log-line fallback", () => {
+      it("preserves an offset through the raw log-line fallback", async () => {
+        await lumine.packages.activatePackage("language-text");
+        editor.setGrammar(lumine.grammars.grammarForScopeName("text.plain"));
         editor.setText("2026-10-08T12:34:56.789-03:30 INFO server started");
-        spyOn(editor, "bufferRangeForScopeAtPosition").and.returnValue(null);
-
-        expect(filter.getRowTimestamp(0).getTime()).toBe(Date.UTC(2026, 9, 8, 16, 4, 56, 789));
+        expect((await filter.getRowTimestamp(0)).getTime()).toBe(
+          Date.UTC(2026, 9, 8, 16, 4, 56, 789),
+        );
       });
 
       it("rejects an invalid explicit offset instead of treating it as local time", () => {

@@ -19,6 +19,7 @@ describe("Log Filter short timestamp ranges", () => {
       await editor.languageMode.ready;
       await editor.getBuffer().getLanguageMode().atTransactionEnd();
       main.showPanel(editor);
+      await main.view.updateTimestamps();
       expect(main.view.timestamps.style.display).toBe("");
       expect(main.view.timestampStart.textContent).toBe("01-01-2026 10:00:00");
       expect(main.view.timestampEnd.textContent).toBe("01-01-2026 10:00:00");
@@ -29,6 +30,7 @@ describe("Log Filter short timestamp ranges", () => {
     await editor.languageMode.ready;
     await editor.getBuffer().getLanguageMode().atTransactionEnd();
     main.showPanel(editor);
+    await main.view.updateTimestamps();
     expect(main.view.timestampStart.textContent).toBe("04-03-2001 05:06:07");
     expect(main.view.timestampEnd.textContent).toBe("04-03-2001 05:06:08");
   });
