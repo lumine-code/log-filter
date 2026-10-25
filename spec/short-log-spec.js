@@ -1,4 +1,9 @@
 describe("Log Filter short timestamp ranges", () => {
+  // Processing fixtures use a real grammar; None deliberately disables this package.
+  beforeEach(async () => {
+    await lumine.packages.activatePackage("language-text");
+  });
+
   let main, editor;
   beforeEach(async () => {
     for (const method of ["openPath", "openExternal", "openApplication", "showItemInFolder"])

@@ -2,6 +2,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 describe("Log Filter timestamp refresh after worker edits", () => {
+  // Processing fixtures use a real grammar; None deliberately disables this package.
+  beforeEach(async () => {
+    await lumine.packages.activatePackage("language-text");
+  });
+
   let execution, editor, main, file;
   beforeEach(async () => {
     jasmine.useRealClock();

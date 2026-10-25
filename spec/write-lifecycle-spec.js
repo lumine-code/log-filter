@@ -1,4 +1,9 @@
 describe("Log Filter write completion ownership", () => {
+  // Processing fixtures use a real grammar; None deliberately disables this package.
+  beforeEach(async () => {
+    await lumine.packages.activatePackage("language-text");
+  });
+
   it("does not restore a retired write over a replacement activation's draft", async () => {
     lumine.config.set("log-filter.autoShow", true);
     await lumine.packages.activatePackage("language-log");
