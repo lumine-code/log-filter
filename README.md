@@ -34,6 +34,8 @@ Text filtering works in any buffer, so the panel can be opened anywhere with `lo
 
 The severity buttons need a grammar that marks log levels with the `keyword.other.log.log-*` scopes, as `language-log` does. Such grammars are listed in the "Grammar scopes" setting, which also decides where the panel opens on its own when "Open panel automatically" is enabled; the buttons are hidden for every other grammar.
 
+Selecting None removes the panel, its folds and pending analysis. Restoring a grammar reopens a previously visible panel with its query and options, including when automatic opening is disabled.
+
 ## Customization
 
 The style of the panel can be adjusted in the user's `styles.css` file, e.g. tint the timestamp separator:
