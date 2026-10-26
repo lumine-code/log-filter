@@ -66,12 +66,12 @@ describe("log-filter with no grammar", () => {
     expect(resumed).not.toBe(view);
     expect(resumed.filterBuffer.getText()).toBe("second");
     await conditionPromise(() => resumed.filter.hiddenRows.levels.length === 3);
-    expect(resumed.filter.hiddenRows.text).toEqual([0, 2, 3]);
-    oldOptions.onChunk([1]);
+    expect(resumed.filter.hiddenRows.text.toArray()).toEqual([0, 2, 3]);
+    oldOptions.onChunk([[1, 1]]);
     release({ count: 1 });
     await pending;
     expect(main.view).toBe(resumed);
-    expect(resumed.filter.hiddenRows.levels).toEqual([0, 2, 3]);
+    expect(resumed.filter.hiddenRows.levels.toArray()).toEqual([0, 2, 3]);
     main.closePanel();
     editor.setGrammar(lumine.grammars.nullGrammar);
     editor.setGrammar(grammar);

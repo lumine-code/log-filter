@@ -32,6 +32,10 @@ Commands available in `lumine-workspace`:
 
 Text filtering works in any buffer, so the panel can be opened anywhere with `log-filter:toggle`.
 
+Large filters read immutable snapshots cooperatively and store consecutive hidden rows as intervals. Literal queries work on giant rows and skip the rest of a row after its first match. Regex mode tests each complete row in an isolated worker, with a 1 Mi UTF-16 input limit per row and a one-second execution deadline; it never tests a truncated prefix. A source edit or a newer query cancels obsolete work.
+
+Queries are limited to 65,536 UTF-16 units and filters to 10,000 separate fold regions. Exceeding either limit reports the problem and clears that filter without showing a partial result. The panel displays progress while applying a large set of folds. Timestamp discovery reads bounded chunks and accepts complete timestamp tokens up to 256 units; it does not copy a whole log row.
+
 The severity buttons need a grammar that marks log levels with the `keyword.other.log.log-*` scopes, as `language-log` does. Such grammars are listed in the "Grammar scopes" setting, which also decides where the panel opens on its own when "Open panel automatically" is enabled; the buttons are hidden for every other grammar.
 
 Selecting None removes the panel, its folds and pending analysis. Restoring a grammar reopens a previously visible panel with its query and options, including when automatic opening is disabled.

@@ -48,12 +48,12 @@ describe("log-filter", () => {
       expect(filter.getHiddenRows()).toEqual([0, 1, 3]);
     });
 
-    it("matches the query literally unless regex mode is enabled", () => {
+    it("matches the query literally unless regex mode is enabled", async () => {
       filter.filterText("10:00:0.");
       expect(filter.getHiddenRows()).toEqual([0, 1, 2, 3, 4]);
 
       filter.setRegexEnabled(true);
-      filter.filterText("10:00:0.");
+      await filter.filterText("10:00:0.");
       expect(filter.getHiddenRows()).toEqual([]);
     });
 
